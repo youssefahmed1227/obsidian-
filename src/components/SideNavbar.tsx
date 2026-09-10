@@ -6,7 +6,6 @@ import {
   Calendar,
   Trophy,
   ShieldAlert,
-  ShieldCheck,
   RefreshCw,
   Bell,
   Sun,
@@ -76,8 +75,6 @@ export const SideNavbar: React.FC<SideNavbarProps> = ({
     };
   }, [isOpen]);
 
-  const isAdmin = user.role === 'Admin';
-  const isAgent = user.role === 'Sales Agent';
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const getInitials = (name?: string) => {
@@ -126,7 +123,7 @@ export const SideNavbar: React.FC<SideNavbarProps> = ({
               <span className="text-sm font-bold uppercase tracking-wider text-slate-100">
                 Obsidian <span className="text-[#6366f1]">CRM</span>
               </span>
-              <p className="text-[10px] text-slate-400 font-mono">Main Navigation & Controls</p>
+              <p className="text-[10px] text-slate-400 font-mono">Main Navigation & Menu</p>
             </div>
           </div>
 
@@ -142,7 +139,7 @@ export const SideNavbar: React.FC<SideNavbarProps> = ({
 
         {/* Drawer Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
-          {/* Section 1: User Profile & Role Info */}
+          {/* Section 1: User Profile (Role removed) */}
           <div
             id="side-nav-user-card"
             className="rounded-xl border border-slate-800 bg-[#1f2937] p-3.5 space-y-2.5 shadow-sm"
@@ -156,31 +153,15 @@ export const SideNavbar: React.FC<SideNavbarProps> = ({
                 <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
               </div>
             </div>
-
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
-              <span className="text-[11px] text-slate-400 flex items-center gap-1.5 font-medium">
-                <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
-                <span>Assigned Role:</span>
-              </span>
-              <span
-                className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider border ${
-                  isAdmin
-                    ? 'bg-purple-900/40 text-purple-300 border-purple-800/60'
-                    : 'bg-sky-900/40 text-sky-300 border-sky-800/60'
-                }`}
-              >
-                {user.role}
-              </span>
-            </div>
           </div>
 
-          {/* Section 2: CRM Navigation Views (Filtered strictly by Role) */}
+          {/* Section 2: Navigation Views */}
           <div className="space-y-1.5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">
-              Views {isAgent ? '(Agent Access)' : '(Executive Admin)'}
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1 mb-2">
+              Navigation Menu
             </p>
 
-            {/* CRM Master (Available to both Admin and Agent) */}
+            {/* CRM Master */}
             <button
               id="side-nav-crm-master"
               onClick={() => handleNavClick('dashboard')}
@@ -197,7 +178,7 @@ export const SideNavbar: React.FC<SideNavbarProps> = ({
               {currentView === 'dashboard' && <CheckCircle2 className="h-4 w-4 text-white" />}
             </button>
 
-            {/* Calendar & Follow-Ups (Available to both Admin and Agent) */}
+            {/* Calendar & Follow-Ups */}
             <button
               id="side-nav-calendar"
               onClick={() => handleNavClick('calendar')}
@@ -214,61 +195,60 @@ export const SideNavbar: React.FC<SideNavbarProps> = ({
               {currentView === 'calendar' && <CheckCircle2 className="h-4 w-4 text-white" />}
             </button>
 
-            {/* Leaderboard (Admin ONLY - Hidden from Agent) */}
-            {isAdmin && (
-              <button
-                id="side-nav-leaderboard"
-                onClick={() => handleNavClick('leaderboard')}
-                className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                  currentView === 'leaderboard'
-                    ? 'bg-[#6366f1] text-white shadow-md shadow-indigo-600/30'
-                    : 'bg-[#1f2937]/70 text-slate-300 hover:bg-[#1f2937] hover:text-white border border-slate-800/60'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Trophy className="h-4 w-4 text-amber-400" />
-                  <span>Team Leaderboard</span>
-                </div>
-                {currentView === 'leaderboard' && <CheckCircle2 className="h-4 w-4 text-white" />}
-              </button>
-            )}
+            {/* Admin only views: Leaderboard, Audit Trail, Team & User Management */}
+            {user.role === 'Admin' && (
+              <>
+                {/* Leaderboard */}
+                <button
+                  id="side-nav-leaderboard"
+                  onClick={() => handleNavClick('leaderboard')}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
+                    currentView === 'leaderboard'
+                      ? 'bg-[#6366f1] text-white shadow-md shadow-indigo-600/30'
+                      : 'bg-[#1f2937]/70 text-slate-300 hover:bg-[#1f2937] hover:text-white border border-slate-800/60'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Trophy className="h-4 w-4 text-amber-400" />
+                    <span>Team Leaderboard</span>
+                  </div>
+                  {currentView === 'leaderboard' && <CheckCircle2 className="h-4 w-4 text-white" />}
+                </button>
 
-            {/* Audit Trail (Admin ONLY - Hidden from Agent) */}
-            {isAdmin && (
-              <button
-                id="side-nav-audit"
-                onClick={() => handleNavClick('audit')}
-                className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                  currentView === 'audit'
-                    ? 'bg-[#6366f1] text-white shadow-md shadow-indigo-600/30'
-                    : 'bg-[#1f2937]/70 text-slate-300 hover:bg-[#1f2937] hover:text-white border border-slate-800/60'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <ShieldAlert className="h-4 w-4 text-indigo-400" />
-                  <span>Audit Trail</span>
-                </div>
-                {currentView === 'audit' && <CheckCircle2 className="h-4 w-4 text-white" />}
-              </button>
-            )}
+                {/* Audit Trail */}
+                <button
+                  id="side-nav-audit"
+                  onClick={() => handleNavClick('audit')}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
+                    currentView === 'audit'
+                      ? 'bg-[#6366f1] text-white shadow-md shadow-indigo-600/30'
+                      : 'bg-[#1f2937]/70 text-slate-300 hover:bg-[#1f2937] hover:text-white border border-slate-800/60'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <ShieldAlert className="h-4 w-4 text-indigo-400" />
+                    <span>Audit Trail</span>
+                  </div>
+                  {currentView === 'audit' && <CheckCircle2 className="h-4 w-4 text-white" />}
+                </button>
 
-            {/* Team & User Management (Admin ONLY - Hidden from Agent) */}
-            {isAdmin && (
-              <button
-                id="side-nav-users"
-                onClick={() => handleNavClick('users')}
-                className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                  currentView === 'users'
-                    ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
-                    : 'bg-[#1f2937]/70 text-slate-300 hover:bg-[#1f2937] hover:text-white border border-slate-800/60'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Users className="h-4 w-4 text-purple-400" />
-                  <span>Team & User Management</span>
-                </div>
-                {currentView === 'users' && <CheckCircle2 className="h-4 w-4 text-white" />}
-              </button>
+                {/* Team & User Management */}
+                <button
+                  id="side-nav-users"
+                  onClick={() => handleNavClick('users')}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
+                    currentView === 'users'
+                      ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                      : 'bg-[#1f2937]/70 text-slate-300 hover:bg-[#1f2937] hover:text-white border border-slate-800/60'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="h-4 w-4 text-purple-400" />
+                    <span>Team & User Management</span>
+                  </div>
+                  {currentView === 'users' && <CheckCircle2 className="h-4 w-4 text-white" />}
+                </button>
+              </>
             )}
           </div>
 
@@ -387,20 +367,22 @@ export const SideNavbar: React.FC<SideNavbarProps> = ({
               </span>
             </button>
 
-            {/* Google Sheets / Storage Config Modal Button */}
-            <button
-              id="side-nav-storage-btn"
-              onClick={() => {
-                onOpenSheetModal();
-                onClose();
-              }}
-              className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-[#1f2937] px-3.5 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-700/80 hover:text-white transition-colors"
-            >
-              <div className="flex items-center gap-2.5">
-                <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
-                <span>Database & Google Sheets</span>
-              </div>
-            </button>
+            {/* Google Sheets / Storage Config Modal Button (Admin only) */}
+            {user.role === 'Admin' && (
+              <button
+                id="side-nav-storage-btn"
+                onClick={() => {
+                  onOpenSheetModal();
+                  onClose();
+                }}
+                className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-[#1f2937] px-3.5 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-700/80 hover:text-white transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
+                  <span>Database & Google Sheets</span>
+                </div>
+              </button>
+            )}
           </div>
         </div>
 

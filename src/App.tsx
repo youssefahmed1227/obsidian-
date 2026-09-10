@@ -61,13 +61,6 @@ export default function App() {
   // View navigation: 'dashboard' | 'leaderboard' | 'audit' | 'calendar' | 'users'
   const [currentView, setCurrentView] = useState<'dashboard' | 'leaderboard' | 'audit' | 'calendar' | 'users'>('dashboard');
 
-  // Enforce agent navigation guard: Sales Agent can only view 'dashboard' (CRM Master) or 'calendar'
-  useEffect(() => {
-    if (currentUser?.role === 'Sales Agent' && (currentView === 'leaderboard' || currentView === 'audit' || currentView === 'users')) {
-      setCurrentView('dashboard');
-    }
-  }, [currentUser?.role, currentView]);
-
   // Theme State
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
@@ -256,6 +249,16 @@ export default function App() {
     }
   }, [currentUser, syncWithGoogleSheets]);
 
+  // Guard views so non-admin users cannot access Leaderboard, Users, or Audit views
+  useEffect(() => {
+    if (
+      currentUser?.role !== 'Admin' &&
+      (currentView === 'leaderboard' || currentView === 'users' || currentView === 'audit')
+    ) {
+      setCurrentView('dashboard');
+    }
+  }, [currentUser?.role, currentView]);
+
   // Compute Dashboard Metrics (filtered to current user if Sales Agent)
   const isSalesAgent = currentUser?.role === 'Sales Agent';
 
@@ -277,9 +280,9 @@ export default function App() {
   const handleLoginSuccess = (user: SheetUser) => {
     setCurrentUser(user);
     saveCachedUser(user);
-    addNotification('Session Authenticated', `Logged in as ${user.userName} (${user.role}).`, 'system');
-    logAuditEvent('USER_LOGIN', `User session authenticated with role ${user.role}.`);
-    showToast(`Welcome, ${user.userName}! (Role: ${user.role})`, 'success');
+    addNotification('Session Authenticated', `Logged in as ${user.userName}.`, 'system');
+    logAuditEvent('USER_LOGIN', `User session authenticated.`);
+    showToast(`Welcome, ${user.userName}!`, 'success');
   };
 
   const handleLogout = () => {
@@ -290,13 +293,6 @@ export default function App() {
     saveCachedUser(null);
     showToast('Signed out successfully.', 'info');
   };
-
-  // Enforce view restriction: Sales Agents can access CRM Master and Calendar
-  useEffect(() => {
-    if (currentUser?.role === 'Sales Agent' && currentView !== 'dashboard' && currentView !== 'calendar') {
-      setCurrentView('dashboard');
-    }
-  }, [currentUser, currentView]);
 
   // Active Reminder Check (checks for scheduled follow-ups due today)
   useEffect(() => {
@@ -445,6 +441,21 @@ export default function App() {
     setCalendarEvents(updated);
     saveCachedCalendarEvents(updated);
     showToast('Event removed from calendar', 'info');
+  };
+
+  const handleToggleCompleteCalendarEvent = (eventId: string) => {
+    const updated = calendarEvents.map((e) =>
+      e.id === eventId ? { ...e, completed: !e.completed } : e
+    );
+    setCalendarEvents(updated);
+    saveCachedCalendarEvents(updated);
+    const target = updated.find((e) => e.id === eventId);
+    if (target) {
+      showToast(
+        target.completed ? `Completed: ${target.title}` : `Marked pending: ${target.title}`,
+        'success'
+      );
+    }
   };
 
   // Quick Stage updater on table row
@@ -825,11 +836,14 @@ export default function App() {
         }}
         theme={theme}
         onToggleTheme={handleToggleTheme}
-        onOpenSheetModal={() => setIsSheetModalOpen(true)}
+        onOpenSheetModal={() => {
+          if (currentUser.role === 'Admin') {
+            setIsSheetModalOpen(true);
+          }
+        }}
         currentView={currentView}
         onSelectView={(v) => {
-          if (currentUser.role === 'Sales Agent' && v !== 'dashboard' && v !== 'calendar') {
-            showToast('Access restricted: Sales Agents only have access to CRM Master and Calendar.', 'error');
+          if (currentUser.role !== 'Admin' && (v === 'leaderboard' || v === 'users' || v === 'audit')) {
             return;
           }
           setCurrentView(v);
@@ -843,18 +857,10 @@ export default function App() {
             {/* 4 Core Executive Metric Cards */}
             <KPICards metrics={metrics} newLeadsCount={metrics.newLeadsCount} />
 
-            {/* Lower Section: 3-column split for Sales Agent (with Contact Reminders), Full-Width for Admin */}
-            <div
-              className={`flex-1 grid grid-cols-1 ${
-                currentUser.role === 'Sales Agent' ? 'lg:grid-cols-3' : 'lg:grid-cols-1'
-              } gap-6 min-h-0`}
-            >
+            {/* Lower Section: 3-column split with Contact Reminders Calendar */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
               {/* Master Client Directory */}
-              <div
-                className={`${
-                  currentUser.role === 'Sales Agent' ? 'lg:col-span-2' : 'lg:col-span-1'
-                } min-h-0`}
-              >
+              <div className="lg:col-span-2 min-h-0">
                 <ClientDirectoryTable
                   customers={customers}
                   currentUser={currentUser}
@@ -876,20 +882,18 @@ export default function App() {
                 />
               </div>
 
-              {/* Right Column: Contact Reminders Calendar (Appears ONLY for Sales Agent, NOT Admin) */}
-              {currentUser.role === 'Sales Agent' && (
-                <div className="space-y-6">
-                  <ContactRemindersCalendarCard
-                    customers={customers}
-                    onOpenFullCalendar={() => setCurrentView('calendar')}
-                    onEditCustomer={(cust) => {
-                      setEditingCustomer(cust);
-                      setIsAddModalOpen(true);
-                    }}
-                    onLogCallCase={handleLogCallCase}
-                  />
-                </div>
-              )}
+              {/* Right Column: Contact Reminders Calendar Card */}
+              <div className="space-y-6">
+                <ContactRemindersCalendarCard
+                  customers={customers}
+                  onOpenFullCalendar={() => setCurrentView('calendar')}
+                  onEditCustomer={(cust) => {
+                    setEditingCustomer(cust);
+                    setIsAddModalOpen(true);
+                  }}
+                  onLogCallCase={handleLogCallCase}
+                />
+              </div>
             </div>
           </>
         )}
@@ -902,6 +906,11 @@ export default function App() {
             availableUsers={availableUsers}
             onAddEvent={handleAddCalendarEvent}
             onDeleteEvent={handleDeleteCalendarEvent}
+            onToggleCompleteEvent={handleToggleCompleteCalendarEvent}
+            onOpenCustomerDetail={(customerId) => {
+              const cust = customers.find((c) => c.customerId === customerId);
+              if (cust) setActiveDrawerCustomer(cust);
+            }}
           />
         )}
 
@@ -957,7 +966,7 @@ export default function App() {
           <span className="hidden sm:inline">• Active Accounts: {customers.length}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span>Role-Based Access Control • Audit Active</span>
+          <span>Obsidian Corporate Workspace • Audit Active</span>
         </div>
       </footer>
 
@@ -986,23 +995,25 @@ export default function App() {
         onQuickUpdateStage={handleQuickUpdateStage}
       />
 
-      {/* File Storage & Database Management Modal */}
-      <SheetSyncModal
-        isOpen={isSheetModalOpen}
-        onClose={() => setIsSheetModalOpen(false)}
-        syncState={syncState}
-        onTriggerSync={() => syncWithGoogleSheets(true)}
-        onResetSeedData={handleRefreshSheetData}
-        currentUser={currentUser}
-        onDisconnectDatabase={handleDisconnectDatabase}
-        onClearAllRecords={handleClearAllRecords}
-        onReconnectDatabase={handleReconnectDatabase}
-        onCustomersImported={(newCustomers) => {
-          setCustomers(newCustomers);
-          showToast(`Imported ${newCustomers.length} accounts from file!`, 'success');
-          addNotification('File Imported', `Loaded ${newCustomers.length} accounts into local storage.`, 'system');
-        }}
-      />
+      {/* File Storage & Database Management Modal (Admin only) */}
+      {currentUser.role === 'Admin' && (
+        <SheetSyncModal
+          isOpen={isSheetModalOpen}
+          onClose={() => setIsSheetModalOpen(false)}
+          syncState={syncState}
+          onTriggerSync={() => syncWithGoogleSheets(true)}
+          onResetSeedData={handleRefreshSheetData}
+          currentUser={currentUser}
+          onDisconnectDatabase={handleDisconnectDatabase}
+          onClearAllRecords={handleClearAllRecords}
+          onReconnectDatabase={handleReconnectDatabase}
+          onCustomersImported={(newCustomers) => {
+            setCustomers(newCustomers);
+            showToast(`Imported ${newCustomers.length} accounts from file!`, 'success');
+            addNotification('File Imported', `Loaded ${newCustomers.length} accounts into local storage.`, 'system');
+          }}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       {customerToDelete && (

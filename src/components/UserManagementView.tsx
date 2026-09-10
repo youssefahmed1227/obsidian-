@@ -45,7 +45,6 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
   onBackToDashboard,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'ALL' | 'Admin' | 'Sales Agent'>('ALL');
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
 
   // Form states for new user
@@ -84,7 +83,6 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
 
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
-      if (roleFilter !== 'ALL' && u.role !== roleFilter) return false;
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase();
         const matchName = u.userName.toLowerCase().includes(query);
@@ -94,10 +92,9 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
       }
       return true;
     });
-  }, [users, roleFilter, searchTerm]);
+  }, [users, searchTerm]);
 
   const adminCount = users.filter((u) => u.role === 'Admin').length;
-  const agentCount = users.filter((u) => u.role === 'Sales Agent').length;
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,9 +194,6 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
                 <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                   Team & User Management
                 </h1>
-                <span className="rounded-full bg-purple-500/15 border border-purple-500/30 px-2.5 py-0.5 text-[10px] font-bold text-purple-300 uppercase tracking-wider">
-                  Admin Only
-                </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
                 Manage user access credentials, assign RBAC permissions, and oversee team members.
@@ -229,28 +223,18 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
         </div>
 
         {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-800">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-5 border-t border-slate-800">
           <div className="bg-[#1f2937]/50 rounded-xl p-3 border border-slate-800">
-            <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Team</p>
+            <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total Team Members</p>
             <p className="text-2xl font-bold text-white mt-0.5">{users.length}</p>
           </div>
           <div className="bg-[#1f2937]/50 rounded-xl p-3 border border-slate-800">
-            <p className="text-[11px] font-medium text-purple-400 uppercase tracking-wider flex items-center gap-1">
-              <Shield className="h-3 w-3" />
-              <span>Admins</span>
-            </p>
-            <p className="text-2xl font-bold text-white mt-0.5">{adminCount}</p>
-          </div>
-          <div className="bg-[#1f2937]/50 rounded-xl p-3 border border-slate-800">
-            <p className="text-[11px] font-medium text-indigo-400 uppercase tracking-wider flex items-center gap-1">
-              <UserCheck className="h-3 w-3" />
-              <span>Sales Agents</span>
-            </p>
-            <p className="text-2xl font-bold text-white mt-0.5">{agentCount}</p>
-          </div>
-          <div className="bg-[#1f2937]/50 rounded-xl p-3 border border-slate-800">
-            <p className="text-[11px] font-medium text-emerald-400 uppercase tracking-wider">Assigned Accounts</p>
+            <p className="text-[11px] font-medium text-indigo-400 uppercase tracking-wider">Assigned Accounts</p>
             <p className="text-2xl font-bold text-white mt-0.5">{customers.length}</p>
+          </div>
+          <div className="bg-[#1f2937]/50 rounded-xl p-3 border border-slate-800">
+            <p className="text-[11px] font-medium text-emerald-400 uppercase tracking-wider">Active Directories</p>
+            <p className="text-2xl font-bold text-white mt-0.5">{filteredUsers.length}</p>
           </div>
         </div>
       </div>
@@ -265,7 +249,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
               </div>
               <div>
                 <h2 className="text-sm font-bold text-white">Create New CRM User Account</h2>
-                <p className="text-xs text-slate-400">Add an executive Admin or Sales Agent to the CRM.</p>
+                <p className="text-xs text-slate-400">Add a new team member account to the CRM.</p>
               </div>
             </div>
             <button
@@ -355,8 +339,8 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
                   onChange={(e) => setNewRole(e.target.value as 'Admin' | 'Sales Agent')}
                   className="mt-1 w-full rounded-lg border border-slate-700 bg-[#1f2937] py-2 px-3 text-xs text-white focus:border-[#6366f1] focus:outline-none"
                 >
-                  <option value="Sales Agent">Sales Agent (CRM & Calendar access)</option>
-                  <option value="Admin">Admin (Full access + Users & Audit)</option>
+                  <option value="Sales Agent">Sales Agent</option>
+                  <option value="Admin">Admin</option>
                 </select>
               </div>
 
@@ -422,21 +406,11 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Role:</span>
-          {(['ALL', 'Admin', 'Sales Agent'] as const).map((r) => (
-            <button
-              key={r}
-              onClick={() => setRoleFilter(r)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                roleFilter === r
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
-              }`}
-            >
-              {r === 'ALL' ? 'All Roles' : r}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <span>Total Team Members:</span>
+          <span className="font-bold text-white font-mono bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+            {filteredUsers.length}
+          </span>
         </div>
       </div>
 
@@ -448,7 +422,6 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
               <tr>
                 <th className="py-3.5 px-4">User</th>
                 <th className="py-3.5 px-4">Email</th>
-                <th className="py-3.5 px-4">Role</th>
                 <th className="py-3.5 px-4">Department</th>
                 <th className="py-3.5 px-4">Assigned Accounts</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
@@ -457,7 +430,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
             <tbody className="divide-y divide-slate-800 text-slate-200">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-500 text-xs">
+                  <td colSpan={5} className="py-8 text-center text-slate-500 text-xs">
                     No team members found matching your search.
                   </td>
                 </tr>
@@ -507,21 +480,6 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
                       {/* Email */}
                       <td className="py-3.5 px-4 font-mono text-slate-400">
                         {u.email}
-                      </td>
-
-                      {/* Role Badge */}
-                      <td className="py-3.5 px-4">
-                        {u.role === 'Admin' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/30">
-                            <Shield className="h-3 w-3" />
-                            <span>Admin</span>
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-                            <UserCheck className="h-3 w-3" />
-                            <span>Sales Agent</span>
-                          </span>
-                        )}
                       </td>
 
                       {/* Department */}

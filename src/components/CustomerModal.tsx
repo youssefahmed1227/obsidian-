@@ -31,7 +31,7 @@ import {
   CustomerCaseEntry,
 } from '../types';
 import { ALL_STAGES } from '../utils/metrics';
-import { getHistoryTimeBreakdown, formatDateWithDay } from '../utils/dateTime';
+import { getHistoryTimeBreakdown, formatDateWithDay, getTodayISO } from '../utils/dateTime';
 
 interface CustomerModalProps {
   isOpen: boolean;
@@ -68,6 +68,12 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
 
   // Customer Type (Customizable by Employee)
   const [customerType, setCustomerType] = useState('Enterprise');
+
+  // Poultry Feed Specific Fields (🐔 النوع، 🔢 عدد الطيور، 📅 العمر، 📦 المنتجات)
+  const [poultryType, setPoultryType] = useState('دجاج تسمين (Broilers)');
+  const [birdCount, setBirdCount] = useState<number | string>('');
+  const [flockAge, setFlockAge] = useState('');
+  const [feedProducts, setFeedProducts] = useState('');
 
   // Calendar Reminder States
   const [reminderDate, setReminderDate] = useState('');
@@ -140,6 +146,10 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
       setCaseHistoryList(initialData.caseHistory || []);
       setPhotoUrl(initialData.photoUrl || '');
       setPhotoName(initialData.photoName || '');
+      setPoultryType(initialData.poultryType || 'دجاج تسمين (Broilers)');
+      setBirdCount(initialData.birdCount !== undefined ? initialData.birdCount : '');
+      setFlockAge(initialData.flockAge || '');
+      setFeedProducts(initialData.feedProducts || '');
     } else {
       const randCust = Math.floor(1000 + Math.random() * 9000);
       const randDeal = Math.floor(1000 + Math.random() * 9000);
@@ -152,10 +162,14 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
       setStatusStage('Lead');
       setDealValue(50000);
       setNotes('');
+      setPoultryType('دجاج تسمين (Broilers)');
+      setBirdCount('');
+      setFlockAge('');
+      setFeedProducts('');
       setCustomerId(`CUST-${randCust}`);
       setDealId(`DEAL-${randDeal}`);
       setNewLead(true);
-      setReminderDate('2026-09-07');
+      setReminderDate(getTodayISO());
       setReminderTime('10:00');
       setReminderNote('Follow up on initial discovery requirements');
       setEnableReminder(true);
@@ -350,6 +364,11 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
       caseHistory: finalCaseHistory,
       photoUrl: photoUrl || undefined,
       photoName: photoName || undefined,
+      // Poultry Feed CRM Specifications
+      poultryType: poultryType.trim() || undefined,
+      birdCount: birdCount !== '' && !isNaN(Number(birdCount)) ? Number(birdCount) : (birdCount ? String(birdCount).trim() : undefined),
+      flockAge: flockAge.trim() || undefined,
+      feedProducts: feedProducts.trim() || undefined,
     };
 
     onSave(record);
@@ -534,6 +553,237 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
                     {tp}
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Poultry Natural & Herbal Medicines Specifications (🐔 النوع، 🔢 عدد الطيور، 📅 العمر، 🌿 الأدوية العشبية) */}
+          <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/25 via-slate-900/50 to-slate-900/80 p-4 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🌿</span>
+                <div>
+                  <h3 className="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>بيانات المزرعة والقطيع والأدوية العشبية الطبيعية</span>
+                    <span className="text-[10px] text-emerald-400/80 font-normal">/ Natural Poultry Remedies</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    نوع الطيور، حجم القطيع، عمر الدورة، والمستحضرات والأدوية العشبية المطلوبة
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-300 border border-emerald-400/30 font-mono">
+                HERBAL VET REMEDIES
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              {/* 1. 🐔 النوع (Flock Type) */}
+              <div>
+                <label htmlFor="modal-poultry-type" className="block text-xs font-bold text-slate-200 mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <span>🐔</span>
+                    <span>النوع (نوع الطيور)</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">Type</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="modal-poultry-type"
+                    type="text"
+                    value={poultryType}
+                    onChange={(e) => setPoultryType(e.target.value)}
+                    placeholder="مثال: دجاج تسمين، بياض، ساسو، بلدي..."
+                    className="w-full rounded-xl border border-slate-700 bg-[#1f2937] py-2 px-3 text-sm text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                  />
+                </div>
+                {/* Quick Type Presets */}
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {[
+                    'دجاج تسمين',
+                    'دجاج بياض',
+                    'أمهات دواجن',
+                    'دجاج ساسو',
+                    'دجاج بلدي',
+                    'بط',
+                    'ديك رومي',
+                  ].map((pType) => (
+                    <button
+                      key={pType}
+                      type="button"
+                      onClick={() => setPoultryType(pType)}
+                      className={`text-[10px] px-2 py-0.5 rounded-md border transition-all ${
+                        poultryType === pType
+                          ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 font-bold'
+                          : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                      }`}
+                    >
+                      {pType}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. 🔢 عدد الطيور (Bird Count) */}
+              <div>
+                <label htmlFor="modal-bird-count" className="block text-xs font-bold text-slate-200 mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <span>🔢</span>
+                    <span>عدد الطيور</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">Count</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="modal-bird-count"
+                    type="number"
+                    value={birdCount}
+                    onChange={(e) => setBirdCount(e.target.value)}
+                    placeholder="مثال: 10000"
+                    min="0"
+                    step="500"
+                    className="w-full rounded-xl border border-slate-700 bg-[#1f2937] py-2 px-3 text-sm text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 font-mono"
+                  />
+                </div>
+                {/* Quick Add Counts */}
+                <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+                  <span className="text-[10px] text-slate-500">سريع:</span>
+                  {[3000, 5000, 10000, 20000, 50000].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setBirdCount(num)}
+                      className={`text-[10px] px-1.5 py-0.5 rounded-md border font-mono transition-all ${
+                        Number(birdCount) === num
+                          ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 font-bold'
+                          : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                      }`}
+                    >
+                      {num.toLocaleString()}
+                    </button>
+                  ))}
+                </div>
+                {/* Estimated Water & Medicine Dosage Helper */}
+                {Number(birdCount) > 0 && (
+                  <div className="mt-1.5 text-[10px] text-emerald-300/90 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded space-y-0.5">
+                    <div>💧 ماء الشرب اليومي: ~{((Number(birdCount) * 180) / 1000).toFixed(0)} لتر/يوم</div>
+                    <div className="text-slate-400 font-mono">🌿 الجرعة (1 مل/لتر): ~{((Number(birdCount) * 180) / 1000).toFixed(0)} مل/يوم</div>
+                  </div>
+                )}
+              </div>
+
+              {/* 3. 📅 العمر (Flock Age) */}
+              <div>
+                <label htmlFor="modal-flock-age" className="block text-xs font-bold text-slate-200 mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <span>📅</span>
+                    <span>العمر (عمر الطيور)</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">Age</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="modal-flock-age"
+                    type="text"
+                    value={flockAge}
+                    onChange={(e) => setFlockAge(e.target.value)}
+                    placeholder="مثال: 15 يوم، أو 4 أسابيع..."
+                    className="w-full rounded-xl border border-slate-700 bg-[#1f2937] py-2 px-3 text-sm text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                  />
+                </div>
+                {/* Age Stage Presets */}
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {[
+                    'تحضين (1-10 يوم)',
+                    'نمو (11-22 يوم)',
+                    'ناهي (23-35 يوم)',
+                    'إنتاج بيض',
+                    'وقائي دوري',
+                    'علاجي مكثف',
+                  ].map((presetAge) => (
+                    <button
+                      key={presetAge}
+                      type="button"
+                      onClick={() => setFlockAge(presetAge)}
+                      className={`text-[10px] px-1.5 py-0.5 rounded-md border transition-all ${
+                        flockAge === presetAge
+                          ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 font-bold'
+                          : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                      }`}
+                    >
+                      {presetAge}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 4. 📦 المنتجات اللي سأل عنها أو اشتراها (Inquired / Purchased Natural & Herbal Medicine Products) */}
+            <div className="pt-2 border-t border-slate-800/80">
+              <label htmlFor="modal-feed-products" className="block text-xs font-bold text-slate-200 mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <span>🌿</span>
+                  <span>المنتجات والأدوية البيطرية العشبية والطبيعية المطلوبة</span>
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">Natural & Herbal Products</span>
+              </label>
+              <div className="relative">
+                <input
+                  id="modal-feed-products"
+                  type="text"
+                  value={feedProducts}
+                  onChange={(e) => setFeedProducts(e.target.value)}
+                  placeholder="مثال: رافع مناعة عشبي، مضاد سموم بيولوجي وعشبي، منشط كبد وغسيل كلى طبيعي، موسع شعب..."
+                  className="w-full rounded-xl border border-slate-700 bg-[#1f2937] py-2 px-3 text-sm text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                />
+              </div>
+
+              {/* Natural & Herbal Veterinary Medicine Products Quick Select Multi-Toggles */}
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {[
+                  'رافع مناعة عشبي',
+                  'مضاد سموم بيولوجي وعشبي',
+                  'منشط كبد وغسيل كلى طبيعي',
+                  'موسع شعب ومضاد تنفسي عشبي',
+                  'مطهر معوي ومضاد إسهال عشبي',
+                  'مضاد كوكسيديا وكلوستريديا عشبي',
+                  'منشط نمو وأحماض عضوية طبيعية',
+                  'مستخلص أوريجانو ونعناع طبيعي',
+                  'فيتامينات وأملاح معدنية مخلبية',
+                  'بروبيوتيك وخمائر نافعة',
+                  'مضاد إجهاد حراري وفيتامين C',
+                ].map((prod) => {
+                  const isSelected = feedProducts.includes(prod);
+                  return (
+                    <button
+                      key={prod}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          const updated = feedProducts
+                            .split('، ')
+                            .map((p) => p.trim())
+                            .filter((p) => p !== prod && p !== '')
+                            .join('، ');
+                          setFeedProducts(updated);
+                        } else {
+                          const updated = feedProducts.trim()
+                            ? `${feedProducts.trim()}، ${prod}`
+                            : prod;
+                          setFeedProducts(updated);
+                        }
+                      }}
+                      className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1 transition-all ${
+                        isSelected
+                          ? 'bg-emerald-400 text-slate-950 border-emerald-300 font-bold shadow-xs'
+                          : 'bg-slate-800/90 text-slate-300 border-slate-700 hover:border-slate-500 hover:text-white'
+                      }`}
+                    >
+                      <span>{isSelected ? '✓' : '+'}</span>
+                      <span>{prod}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1015,30 +1265,23 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
               </div>
             </div>
 
-            {/* Assigned Sales Agent */}
+            {/* Assigned Team Member */}
             <div>
               <label htmlFor="modal-assigned-agent" className="block font-semibold text-slate-300">
-                Assigned Sales Agent
+                Assigned Team Member
               </label>
-              {currentUser?.role === 'Sales Agent' ? (
-                <div className="mt-1 flex items-center justify-between rounded-lg border border-slate-700 bg-[#1f2937] px-3 py-2 text-slate-300">
-                  <span className="font-semibold text-white">{currentUser.userName}</span>
-                  <span className="text-[10px] text-indigo-400 font-medium">Auto-Assigned To You</span>
-                </div>
-              ) : (
-                <select
-                  id="modal-assigned-agent"
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-700 bg-[#1f2937] py-2 px-3 text-white focus:border-[#6366f1] focus:outline-none focus:ring-1 focus:ring-[#6366f1]"
-                >
-                  {salesAgentOptions.map((agent) => (
-                    <option key={agent.name} value={agent.name}>
-                      {agent.name} ({agent.email})
-                    </option>
-                  ))}
-                </select>
-              )}
+              <select
+                id="modal-assigned-agent"
+                value={assignedTo}
+                onChange={(e) => setAssignedTo(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-[#1f2937] py-2 px-3 text-white focus:border-[#6366f1] focus:outline-none focus:ring-1 focus:ring-[#6366f1]"
+              >
+                {salesAgentOptions.map((agent) => (
+                  <option key={agent.name} value={agent.name}>
+                    {agent.name} ({agent.email})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

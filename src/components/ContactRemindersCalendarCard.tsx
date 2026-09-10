@@ -14,6 +14,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { CustomerRecord } from '../types';
+import { getTodayISO } from '../utils/dateTime';
 
 interface ContactRemindersCalendarCardProps {
   customers: CustomerRecord[];
@@ -28,8 +29,8 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
   onEditCustomer,
   onLogCallCase,
 }) => {
-  // Mini calendar current view month (defaulting to September 2026)
-  const [viewDate, setViewDate] = useState<Date>(() => new Date(2026, 8, 1));
+  // Mini calendar current view month (dynamic to today's date)
+  const [viewDate, setViewDate] = useState<Date>(() => new Date());
   const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
 
   const monthName = viewDate.toLocaleString('en-US', { month: 'short' });
@@ -45,6 +46,11 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
     const next = new Date(viewDate);
     next.setMonth(next.getMonth() + 1);
     setViewDate(next);
+  };
+
+  const handleGoToday = () => {
+    setViewDate(new Date());
+    setSelectedDateFilter(getTodayISO());
   };
 
   // Map of date string "YYYY-MM-DD" -> count of client follow-ups
@@ -107,62 +113,71 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
     return withReminders.sort((a, b) => (a.reminderDate || '').localeCompare(b.reminderDate || ''));
   }, [customers, selectedDateFilter]);
 
-  const todayStr = '2026-09-07';
+  const todayStr = useMemo(() => getTodayISO(), []);
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-[#111827] p-5 shadow-xl space-y-4">
+    <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-[#111827] p-5 shadow-sm dark:shadow-xl space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div className="flex items-center gap-2">
-          <span className="p-1.5 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30">
-            <CalendarIcon className="h-4 w-4" />
+      <div className="flex items-center justify-between pb-3.5 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex items-center gap-2.5">
+          <span className="p-2 rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/30">
+            <CalendarIcon className="h-4.5 w-4.5" />
           </span>
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-              <span>Contact Reminders Calendar</span>
-              <span className="rounded-full bg-emerald-500/15 px-1.5 py-0.2 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>Contact Reminders</span>
+              <span className="rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30">
                 {Object.keys(remindersByDate).length} Dates
               </span>
             </h3>
-            <p className="text-[11px] text-slate-400">Scheduled client telephone calls & WhatsApp follow-ups</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">Scheduled client calls & WhatsApp follow-ups</p>
           </div>
         </div>
 
         <button
           onClick={onOpenFullCalendar}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-[#6366f1] hover:text-indigo-400 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6366f1] hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1.5 rounded-lg border border-indigo-100 dark:border-indigo-500/20"
         >
-          <span>Full Calendar</span>
-          <ExternalLink className="h-3.5 w-3.5" />
+          <span>Full View</span>
+          <ExternalLink className="h-3 w-3" />
         </button>
       </div>
 
       {/* Mini Calendar Widget */}
-      <div className="rounded-xl border border-slate-800/80 bg-[#161f30] p-3">
+      <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-[#161f30] p-3.5">
         {/* Month Navigation */}
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-xs font-bold text-white font-mono">
-            {monthName} {year}
-          </span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">
+              {monthName} {year}
+            </span>
+            <button
+              type="button"
+              onClick={handleGoToday}
+              className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-500/30 transition-colors border border-amber-200 dark:border-amber-500/30"
+            >
+              Today
+            </button>
+          </div>
           <div className="flex items-center gap-1">
             {selectedDateFilter && (
               <button
                 onClick={() => setSelectedDateFilter(null)}
-                className="text-[10px] text-amber-400 hover:text-amber-300 font-semibold mr-1 underline"
+                className="text-[10px] text-amber-600 dark:text-amber-400 hover:underline font-bold mr-1.5"
               >
                 Clear Filter
               </button>
             )}
             <button
               onClick={handlePrevMonth}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-700"
+              className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-700 transition-colors"
               aria-label="Previous month"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={handleNextMonth}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-700"
+              className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-700 transition-colors"
               aria-label="Next month"
             >
               <ChevronRight className="h-3.5 w-3.5" />
@@ -171,7 +186,7 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
         </div>
 
         {/* Weekday Labels */}
-        <div className="grid grid-cols-7 text-center text-[10px] font-semibold text-slate-400 pb-1">
+        <div className="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 pb-1.5 uppercase">
           <span>Su</span>
           <span>Mo</span>
           <span>Tu</span>
@@ -199,19 +214,19 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
                     setSelectedDateFilter(isSelected ? null : day.dateString);
                   }
                 }}
-                className={`relative h-7 rounded-md flex items-center justify-center font-mono text-[11px] transition-all ${
+                className={`relative h-7.5 rounded-lg flex items-center justify-center font-mono text-[11px] transition-all ${
                   isSelected
-                    ? 'bg-amber-500 text-slate-900 font-bold shadow-md shadow-amber-500/20'
+                    ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm shadow-amber-500/30 ring-2 ring-amber-400/50'
                     : day.hasReminder
-                    ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-900/60 font-bold'
+                    ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/40 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 font-bold'
                     : isToday
-                    ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 font-bold'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                    ? 'bg-indigo-50 dark:bg-indigo-600/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 <span>{day.dayNumber}</span>
                 {day.hasReminder && !isSelected && (
-                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-emerald-400" />
+                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-emerald-500" />
                 )}
               </button>
             );
@@ -220,20 +235,20 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
       </div>
 
       {/* Upcoming Reminders List */}
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold text-slate-300">
+          <span className="font-bold text-slate-800 dark:text-slate-200">
             {selectedDateFilter ? `Follow-ups on ${selectedDateFilter}:` : 'Upcoming Follow-ups & Reminders:'}
           </span>
-          <span className="text-[11px] font-mono text-slate-400">
+          <span className="text-[11px] font-mono font-semibold text-slate-500 dark:text-slate-400">
             {clientRemindersList.length} clients
           </span>
         </div>
 
         <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
           {clientRemindersList.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-800 p-4 text-center text-slate-500 text-xs">
-              No reminders scheduled for this period. Open any client to add a calendar reminder.
+            <div className="rounded-xl border border-dashed border-slate-200 dark:border-slate-800 p-6 text-center text-slate-400 dark:text-slate-500 text-xs">
+              No reminders scheduled for this period. Open any client record to set a reminder date.
             </div>
           ) : (
             clientRemindersList.map((cust) => {
@@ -241,47 +256,47 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
               return (
                 <div
                   key={cust.customerId}
-                  className={`rounded-xl border p-3 text-xs transition-colors ${
+                  className={`rounded-xl border p-3 text-xs transition-all ${
                     isDueToday
-                      ? 'border-amber-500/40 bg-amber-950/20'
-                      : 'border-slate-800 bg-[#161f30]'
+                      ? 'border-amber-300 dark:border-amber-500/40 bg-amber-50/60 dark:bg-amber-950/20'
+                      : 'border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-[#161f30]'
                   }`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-white text-xs">{cust.companyName}</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-bold text-slate-900 dark:text-white text-xs">{cust.companyName}</span>
                         {isDueToday && (
-                          <span className="rounded bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold text-amber-300 border border-amber-500/40 animate-pulse">
+                          <span className="rounded bg-amber-100 dark:bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-extrabold text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/40 animate-pulse">
                             DUE TODAY
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        {cust.contactPerson} • <span className="font-mono text-indigo-300">{cust.statusStage}</span>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        {cust.contactPerson} • <span className="font-mono text-indigo-600 dark:text-indigo-300 font-semibold">{cust.statusStage}</span>
                       </p>
                     </div>
 
-                    <span className="rounded bg-[#111827] px-2 py-0.5 text-[10px] font-mono text-amber-300 border border-slate-700 shrink-0">
+                    <span className="rounded-md bg-white dark:bg-[#111827] px-2 py-0.5 text-[10px] font-mono font-bold text-amber-600 dark:text-amber-300 border border-slate-200 dark:border-slate-700 shrink-0 shadow-2xs">
                       {cust.reminderDate}
                     </span>
                   </div>
 
                   {cust.reminderNote && (
-                    <p className="text-[11px] text-slate-300 italic mt-1.5 line-clamp-1">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 italic mt-1.5 line-clamp-1 bg-white/60 dark:bg-black/20 px-2 py-1 rounded-md">
                       "{cust.reminderNote}"
                     </p>
                   )}
 
                   {/* Dual Phone Quick Contact Buttons */}
-                  <div className="mt-2.5 flex items-center justify-between gap-2 pt-2 border-t border-slate-700/60">
-                    <div className="flex items-center gap-2">
+                  <div className="mt-2.5 flex items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-700/60">
+                    <div className="flex items-center gap-1.5">
                       {cust.phone && (
                         <a
                           href={`tel:${cust.phone}`}
-                          className="flex items-center gap-1 rounded bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 px-2 py-1 text-[10px] font-semibold text-emerald-300"
+                          className="flex items-center gap-1 rounded-lg bg-emerald-50 dark:bg-emerald-600/20 hover:bg-emerald-100 dark:hover:bg-emerald-600/30 border border-emerald-200 dark:border-emerald-500/30 px-2 py-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 transition-colors"
                         >
-                          <Phone className="h-3 w-3 text-emerald-400" />
+                          <Phone className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                           <span>Call</span>
                         </a>
                       )}
@@ -291,9 +306,9 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
                           href={`https://wa.me/${cust.whatsappPhone.replace(/[^0-9]/g, '')}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-1 rounded bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 px-2 py-1 text-[10px] font-semibold text-emerald-300"
+                          className="flex items-center gap-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/30 border border-emerald-200 dark:border-emerald-500/30 px-2 py-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 transition-colors"
                         >
-                          <MessageSquare className="h-3 w-3 text-emerald-400" />
+                          <MessageSquare className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                           <span>WhatsApp</span>
                         </a>
                       )}
@@ -303,16 +318,16 @@ export const ContactRemindersCalendarCard: React.FC<ContactRemindersCalendarCard
                       <button
                         type="button"
                         onClick={() => onLogCallCase(cust, 'called 7/9/2025')}
-                        className="rounded bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-2 py-1 text-[10px] font-semibold flex items-center gap-1"
+                        className="rounded-lg bg-indigo-50 dark:bg-indigo-600/20 hover:bg-indigo-100 dark:hover:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 px-2 py-1 text-[10px] font-bold flex items-center gap-1 transition-colors"
                       >
                         <CheckCircle2 className="h-3 w-3" />
-                        <span>Log "called 7/9/2025"</span>
+                        <span>Log Call</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => onEditCustomer(cust)}
-                        className="rounded bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 text-[10px] font-medium"
+                        className="rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-transparent px-2.5 py-1 text-[10px] font-semibold transition-colors"
                       >
                         Edit
                       </button>

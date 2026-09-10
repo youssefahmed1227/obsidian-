@@ -118,6 +118,31 @@ export function normalizeCustomerRecord(rec: any, index = 0): CustomerRecord {
     caseHistory,
     photoUrl: rec.photoUrl || undefined,
     photoName: rec.photoName || undefined,
+    // Poultry Feed CRM specifics (🐔 النوع، 🔢 عدد الطيور، 📅 العمر، 📦 المنتجات)
+    poultryType:
+      rec.poultryType ||
+      ['دجاج تسمين (Broilers)', 'دجاج بياض (Layers)', 'أمهات دواجن (Breeders)', 'دجاج ساسو (Sasso)', 'دجاج بلدي (Baladi)', 'بط فرنساوي (Ducks)'][
+        index % 6
+      ],
+    birdCount:
+      rec.birdCount !== undefined && rec.birdCount !== ''
+        ? rec.birdCount
+        : [12000, 25000, 8000, 15000, 30000, 6000][index % 6],
+    flockAge:
+      rec.flockAge ||
+      ['18 يوم (علف نامي)', '32 أسبوع (إنتاج بيض)', '7 أيام (تحضين)', '26 يوم (علف ناهي)', '45 أسبوع (بياض)', '12 يوم (تسمين)'][
+        index % 6
+      ],
+    feedProducts:
+      rec.feedProducts ||
+      [
+        'علف نامي 21%، مضاد سموم فطرية',
+        'علف بياض إنتاجي 16%، أملاح وكالسيوم',
+        'علف بادي سوبر 23% سوبر كبسول',
+        'علف ناهي 19%، فيتامينات ومناعة',
+        'علف بياض 18%، كسب صويا 44%',
+        'علف بادي بط 22%، أملاح ومحفزات نمو',
+      ][index % 6],
   };
 }
 
@@ -383,6 +408,10 @@ export function exportCustomersAsCSV(records: CustomerRecord[], fileName = 'cust
     'Deal Value',
     'New Lead',
     'Assigned Agent',
+    'Poultry Type (النوع)',
+    'Bird Count (عدد الطيور)',
+    'Flock Age (العمر)',
+    'Feed Products (المنتجات)',
     'Created Day Name',
     'Created Date',
     'Created Time',
@@ -404,6 +433,10 @@ export function exportCustomersAsCSV(records: CustomerRecord[], fileName = 'cust
       c.dealValue,
       c.newLead ? 'Yes' : 'No',
       `"${c.assignedTo || 'Unassigned'}"`,
+      `"${(c.poultryType || '').replace(/"/g, '""')}"`,
+      `"${c.birdCount !== undefined ? c.birdCount : ''}"`,
+      `"${(c.flockAge || '').replace(/"/g, '""')}"`,
+      `"${(c.feedProducts || '').replace(/"/g, '""')}"`,
       `"${c.createdDayName || cTime.dayName}"`,
       `"${c.createdDate || cTime.date}"`,
       `"${c.createdTime || cTime.time}"`,

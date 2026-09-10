@@ -113,11 +113,11 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
               </div>
             )}
 
-            {/* Quick Auto-Fill Role Bar */}
+            {/* Quick Auto-Fill Account Bar */}
             <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
               <span className="text-[11px] text-slate-300 flex items-center gap-1.5 font-medium">
                 <Zap className="h-3.5 w-3.5 text-amber-400 fill-current" />
-                <span>Auto-Fill:</span>
+                <span>Demo Accounts:</span>
               </span>
               <div className="flex items-center gap-1.5">
                 <button
@@ -126,13 +126,13 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
                   onClick={() => fillAccount('admin', '1234')}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1 border ${
                     identifier === 'admin'
-                      ? 'bg-purple-600 text-white border-purple-500 shadow-sm'
-                      : 'bg-purple-950/40 text-purple-300 border-purple-800/50 hover:bg-purple-900/60'
+                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
+                      : 'bg-slate-800 text-slate-300 border-slate-700/60 hover:bg-slate-700'
                   }`}
-                  title="Auto-fill Administrator (admin / 1234)"
+                  title="Auto-fill admin (admin / 1234)"
                 >
-                  <Shield className="h-3 w-3 text-purple-300" />
-                  <span>Admin</span>
+                  <UserCheck className="h-3 w-3 text-indigo-300" />
+                  <span>admin</span>
                 </button>
                 <button
                   type="button"
@@ -140,13 +140,13 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
                   onClick={() => fillAccount('sarah.j', '1234')}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1 border ${
                     identifier === 'sarah.j'
-                      ? 'bg-sky-600 text-white border-sky-500 shadow-sm'
-                      : 'bg-sky-950/40 text-sky-300 border-sky-800/50 hover:bg-sky-900/60'
+                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
+                      : 'bg-slate-800 text-slate-300 border-slate-700/60 hover:bg-slate-700'
                   }`}
-                  title="Auto-fill Sales Agent (sarah.j / 1234)"
+                  title="Auto-fill sarah.j (sarah.j / 1234)"
                 >
-                  <Users className="h-3 w-3 text-sky-300" />
-                  <span>Sales Agent</span>
+                  <UserCheck className="h-3 w-3 text-indigo-300" />
+                  <span>sarah.j</span>
                 </button>
               </div>
             </div>
@@ -219,7 +219,6 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
 
             <div className="space-y-2">
               {sheetUsers.map((user) => {
-                const isAdmin = user.role === 'Admin';
                 return (
                   <button
                     key={user.userName + user.email}
@@ -230,15 +229,6 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-200">{user.userName}</span>
-                        <span
-                          className={`rounded text-[9px] px-1.5 py-0.5 font-mono ${
-                            isAdmin
-                              ? 'bg-purple-900/50 text-purple-300 border border-purple-500/30'
-                              : 'bg-sky-900/50 text-sky-300 border border-sky-500/30'
-                          }`}
-                        >
-                          {user.role}
-                        </span>
                       </div>
                       <p className="text-[10px] text-slate-400 font-mono mt-0.5">{user.email}</p>
                     </div>
@@ -257,7 +247,7 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
         {/* Security Footer Notice */}
         <div className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-slate-500">
           <ShieldCheck className="h-4 w-4 text-indigo-400/80" />
-          <span>Secure Corporate Workspace • Role-Based Access Control</span>
+          <span>Secure Corporate Workspace • Obsidian CRM</span>
         </div>
       </div>
     </div>

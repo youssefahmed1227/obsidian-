@@ -108,3 +108,52 @@ export function getHistoryTimeBreakdown(input?: string | number | Date | null): 
     fullFormatted,
   };
 }
+
+/**
+ * Returns current date in ISO format: "YYYY-MM-DD"
+ */
+export function getTodayISO(): string {
+  const d = new Date();
+  return formatDateToISO(d);
+}
+
+/**
+ * Formats a given Date as "YYYY-MM-DD" in local time
+ */
+export function formatDateToISO(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Checks if two dates represent the exact same calendar day
+ */
+export function isSameDay(d1: Date, d2: Date): boolean {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+}
+
+/**
+ * Compares an ISO date "YYYY-MM-DD" against reference (defaults to today)
+ */
+export function isDatePast(dateStr: string, referenceDate = new Date()): boolean {
+  if (!dateStr) return false;
+  const target = new Date(dateStr + 'T00:00:00');
+  const ref = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
+  return target.getTime() < ref.getTime();
+}
+
+export function isDateToday(dateStr: string, referenceDate = new Date()): boolean {
+  if (!dateStr) return false;
+  const target = new Date(dateStr + 'T00:00:00');
+  return (
+    target.getFullYear() === referenceDate.getFullYear() &&
+    target.getMonth() === referenceDate.getMonth() &&
+    target.getDate() === referenceDate.getDate()
+  );
+}

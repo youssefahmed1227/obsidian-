@@ -26,57 +26,120 @@ export const KPICards: React.FC<KPICardsProps> = ({ metrics, newLeadsCount }) =>
       {/* Total Accounts */}
       <div
         id="kpi-total-accounts"
-        className="bg-[#1f2937] p-5 rounded-xl border border-slate-800 shadow-xl hover:border-slate-700/80 transition-all"
+        className="group relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-[#111827] p-5 shadow-sm dark:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:hover:border-slate-700"
       >
-        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Accounts</p>
-        <div className="flex items-end justify-between">
-          <h2 className="text-3xl font-bold text-slate-100">{metrics.totalAccounts}</h2>
-          <span className="text-emerald-400 text-xs font-medium mb-1 flex items-center gap-1">
-            +{newLeadsCount} new ↑
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Total Accounts
           </span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+            <Users className="h-4.5 w-4.5" />
+          </div>
         </div>
+
+        <div className="mt-3 flex items-baseline justify-between">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
+            {metrics.totalAccounts}
+          </h2>
+          {newLeadsCount > 0 ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30">
+              <Sparkles className="h-3 w-3" />
+              +{newLeadsCount} new
+            </span>
+          ) : (
+            <span className="text-[11px] text-slate-400 font-medium">Directory live</span>
+          )}
+        </div>
+
+        <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+          <span>Active client portfolios in registry</span>
+        </p>
       </div>
 
       {/* Pipeline Value */}
       <div
         id="kpi-active-pipeline"
-        className="bg-[#1f2937] p-5 rounded-xl border border-slate-800 shadow-xl hover:border-slate-700/80 transition-all"
+        className="group relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-[#111827] p-5 shadow-sm dark:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:hover:border-slate-700"
       >
-        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Pipeline Value</p>
-        <div className="flex items-end justify-between">
-          <h2 className="text-3xl font-bold text-slate-100">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Pipeline Value
+          </span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
+            <TrendingUp className="h-4.5 w-4.5" />
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-baseline justify-between">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {formatCurrency(metrics.activePipelineValue)}
           </h2>
-          <span className="text-[#6366f1] text-xs font-medium mb-1 font-semibold">Active</span>
+          <span className="rounded-full bg-blue-50 dark:bg-blue-500/15 px-2 py-0.5 text-[11px] font-bold text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-500/30">
+            Active Deals
+          </span>
         </div>
+
+        <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+          In Lead, Qualified & Negotiation
+        </p>
       </div>
 
       {/* Total Deal Volume */}
       <div
         id="kpi-deal-volume"
-        className="bg-[#1f2937] p-5 rounded-xl border border-slate-800 shadow-xl hover:border-slate-700/80 transition-all"
+        className="group relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-[#111827] p-5 shadow-sm dark:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:hover:border-slate-700"
       >
-        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Deal Volume</p>
-        <div className="flex items-end justify-between">
-          <h2 className="text-3xl font-bold text-slate-100">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Total Deal Volume
+          </span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20">
+            <DollarSign className="h-4.5 w-4.5" />
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-baseline justify-between">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {formatCurrency(metrics.totalDealVolume)}
           </h2>
-          <span className="text-slate-500 text-xs font-medium mb-1">Closed YTD</span>
+          <span className="text-slate-500 dark:text-slate-400 text-[11px] font-medium">
+            Portfolio Gross
+          </span>
         </div>
+
+        <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+          Total contracted and potential value
+        </p>
       </div>
 
       {/* Conversion Rate */}
       <div
         id="kpi-conversion-rate"
-        className="bg-[#1f2937] p-5 rounded-xl border border-slate-800 shadow-xl hover:border-slate-700/80 transition-all"
+        className="group relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-[#111827] p-5 shadow-sm dark:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:hover:border-slate-700"
       >
-        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Conversion Rate</p>
-        <div className="flex items-end justify-between">
-          <h2 className="text-3xl font-bold text-slate-100">{metrics.conversionRate}%</h2>
-          <div className="w-16 h-2 bg-slate-800 rounded-full mb-2 overflow-hidden">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Conversion Rate
+          </span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20">
+            <Target className="h-4.5 w-4.5" />
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-baseline justify-between">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
+            {metrics.conversionRate}%
+          </h2>
+          <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400">
+            Win Ratio
+          </span>
+        </div>
+
+        <div className="mt-2.5">
+          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div
-              className="h-full bg-emerald-500 rounded-full"
-              style={{ width: `${Math.min(metrics.conversionRate, 100)}%` }}
+              className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(Math.max(metrics.conversionRate, 5), 100)}%` }}
             />
           </div>
         </div>

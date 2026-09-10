@@ -361,15 +361,6 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({
                     <div className="flex items-center gap-1.5">
                       <User className="h-3 w-3 text-slate-400" />
                       <span className="font-semibold text-slate-200">{log.userName}</span>
-                      <span
-                        className={`rounded px-1.5 py-0.2 text-[9px] font-semibold uppercase ${
-                          log.userRole === 'Admin'
-                            ? 'bg-purple-950/60 text-purple-300 border border-purple-800/40'
-                            : 'bg-sky-950/60 text-sky-300 border border-sky-800/40'
-                        }`}
-                      >
-                        {log.userRole}
-                      </span>
                     </div>
                     <span className="text-slate-500 font-mono text-[10px]">{log.userEmail}</span>
                   </div>

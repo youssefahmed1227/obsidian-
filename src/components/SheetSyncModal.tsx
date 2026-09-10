@@ -393,9 +393,8 @@ export const SheetSyncModal: React.FC<SheetSyncModalProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                         <Shield className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Admin Database Controls</span>
+                        <span>Database Controls</span>
                       </span>
-                      <span className="text-[10px] text-purple-400 font-mono">Role: Executive Admin</span>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -589,7 +588,7 @@ export const SheetSyncModal: React.FC<SheetSyncModalProps> = ({
                   </div>
                   <div className="flex items-center justify-between p-2 rounded border border-slate-800 bg-[#111827]">
                     <span className="text-emerald-400">src/data/users.json</span>
-                    <span className="text-slate-400">User accounts, Admin RBAC & UK departments</span>
+                    <span className="text-slate-400">User accounts & UK departments</span>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded border border-slate-800 bg-[#111827]">
                     <span className="text-amber-400">src/data/auditLogs.json</span>

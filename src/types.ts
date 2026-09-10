@@ -53,6 +53,11 @@ export interface CustomerRecord {
   createdDate?: string; // e.g. "Sep 7, 2026"
   createdTime?: string; // e.g. "09:15 AM"
   history?: CustomerHistoryEntry[];
+  // Poultry Feed & Farm Specifications (🐔 النوع، 🔢 عدد الطيور، 📅 العمر، 📦 المنتجات)
+  poultryType?: string; // 🐔 النوع (e.g. دجاج تسمين، دجاج بياض، أمهات، ساسو، بلدي، بط، رومي)
+  birdCount?: number | string; // 🔢 عدد الطيور (e.g. 10000)
+  flockAge?: string; // 📅 العمر (e.g. "18 يوم", "4 أسابيع", "فترة إنتاج البيض")
+  feedProducts?: string; // 📦 المنتجات اللي سأل عنها أو اشتراها (e.g. "علف بادي 23% سوبر، علف نامي 21%")
   // Reminders & Follow-up Calendar
   reminderDate?: string; // e.g. "2026-09-07"
   reminderTime?: string; // e.g. "14:00"

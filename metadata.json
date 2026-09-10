@@ -1,6 +1,6 @@
 {
   "name": "Executive CRM",
-  "description": "High-performance dark mode CRM with local file-based data storage, history tracking with day names and timestamps, Executive Dashboard, and master Client Directory.",
+  "description": "High-performance CRM for natural and herbal poultry medicine manufacturing, featuring flock type, bird count, flock age, herbal veterinary remedies tracking, water dosage estimation, and client directory.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

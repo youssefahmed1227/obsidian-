@@ -6,14 +6,8 @@ import {
   Sun,
   Moon,
   LogOut,
-  ShieldCheck,
   Zap,
-  LayoutDashboard,
-  Trophy,
-  ShieldAlert,
-  Calendar,
   Users,
-  Menu,
 } from 'lucide-react';
 import { SheetUser, CRMNotification, SyncState } from '../types';
 import { SideNavbar } from './SideNavbar';
@@ -75,8 +69,6 @@ export const Header: React.FC<HeaderProps> = ({
     return name.slice(0, 2).toUpperCase();
   };
 
-  const isAdmin = user.role === 'Admin';
-
   return (
     <>
       <header
@@ -85,150 +77,33 @@ export const Header: React.FC<HeaderProps> = ({
         role="banner"
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
-          {/* Brand & Main Navigation */}
-          <div className="flex items-center gap-2.5 sm:gap-4">
-            {/* The ONLY Menu Button */}
+          {/* Obsidian Brand Button - Clicking this opens the full navigation menu */}
+          <div className="flex items-center gap-3">
             <button
-              id="header-menu-btn"
+              id="header-obsidian-brand-btn"
               onClick={() => setIsSideNavOpen(true)}
-              aria-label="Open Navigation Menu"
-              title="Open Navigation Menu"
-              className="flex items-center gap-2 rounded-lg border border-slate-800 bg-[#1f2937] px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-[#6366f1] shrink-0"
-            >
-              <Menu className="h-4 w-4 text-indigo-400" />
-              <span className="text-xs font-semibold">Menu</span>
-              {unreadCount > 0 && (
-                <span className="rounded-full bg-rose-500 px-1.5 py-0.2 text-[9px] font-bold text-white">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* Clean Brand Logo */}
-            <button
-              id="header-lightning-logo-btn"
-              onClick={() => onSelectView('dashboard')}
-              aria-label="Obsidian CRM Dashboard"
-              title="Obsidian CRM Dashboard"
-              className="flex items-center gap-2.5 p-1 -m-1 rounded-xl hover:bg-slate-800/80 transition-all focus:outline-none group cursor-pointer shrink-0"
+              aria-label="Open Obsidian Navigation Menu"
+              title="Click Obsidian to open navigation menu"
+              className="flex items-center gap-2.5 p-1.5 -m-1.5 rounded-xl hover:bg-slate-800/90 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-[#6366f1]/50 group cursor-pointer shrink-0"
             >
               <div className="w-8 h-8 bg-[#6366f1] rounded-lg flex items-center justify-center shadow-md shadow-indigo-600/30 group-hover:bg-indigo-600 transition-all group-hover:scale-105 shrink-0">
                 <Zap className="w-5 h-5 text-white fill-current" />
               </div>
-              <h1 className="text-base sm:text-lg font-bold tracking-tight uppercase text-slate-100 leading-none hidden sm:inline-block">
-                Obsidian <span className="text-[#6366f1]">CRM</span>
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight uppercase text-slate-100 leading-none">
+                  Obsidian <span className="text-[#6366f1]">CRM</span>
+                </h1>
+                {unreadCount > 0 && (
+                  <span className="rounded-full bg-rose-500 px-1.5 py-0.2 text-[9px] font-bold text-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
             </button>
-
-            {/* Desktop Navigation Tabs - Agent sees ONLY CRM Master and Calendar */}
-            <nav
-              className="hidden lg:flex items-center gap-1.5 bg-[#1f2937]/80 p-1.5 rounded-lg border border-slate-800"
-              aria-label="Main Navigation"
-            >
-              <button
-                id="nav-crm-master-btn"
-                onClick={() => onSelectView('dashboard')}
-                title="CRM Master"
-                aria-label="CRM Master"
-                className={`flex h-8 items-center gap-1.5 px-2.5 rounded-md text-xs font-semibold transition-all ${
-                  currentView === 'dashboard'
-                    ? 'bg-[#6366f1] text-white shadow-sm shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                }`}
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                <span className="hidden md:inline">CRM Master</span>
-              </button>
-
-              <button
-                id="nav-calendar-btn"
-                onClick={() => onSelectView('calendar')}
-                title="Calendar & Follow-Ups"
-                aria-label="Calendar & Follow-Ups"
-                className={`flex h-8 items-center gap-1.5 px-2.5 rounded-md text-xs font-semibold transition-all ${
-                  currentView === 'calendar'
-                    ? 'bg-orange-500 text-white shadow-sm shadow-orange-600/30'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                }`}
-              >
-                <Calendar className="h-4 w-4 text-orange-400" />
-                <span className="hidden md:inline">Calendar</span>
-              </button>
-
-              {isAdmin && (
-                <button
-                  id="nav-leaderboard-btn"
-                  onClick={() => onSelectView('leaderboard')}
-                  title="Leaderboard"
-                  aria-label="Leaderboard"
-                  className={`flex h-8 items-center gap-1.5 px-2.5 rounded-md text-xs font-semibold transition-all ${
-                    currentView === 'leaderboard'
-                      ? 'bg-[#6366f1] text-white shadow-sm shadow-indigo-600/30'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                  }`}
-                >
-                  <Trophy className="h-4 w-4 text-amber-400" />
-                  <span className="hidden md:inline">Leaderboard</span>
-                </button>
-              )}
-
-              {isAdmin && (
-                <button
-                  id="nav-audit-btn"
-                  onClick={() => onSelectView('audit')}
-                  title="Audit Trail"
-                  aria-label="Audit Trail"
-                  className={`flex h-8 items-center gap-1.5 px-2.5 rounded-md text-xs font-semibold transition-all ${
-                    currentView === 'audit'
-                      ? 'bg-[#6366f1] text-white shadow-sm shadow-indigo-600/30'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                  }`}
-                >
-                  <ShieldAlert className="h-4 w-4 text-indigo-400" />
-                  <span className="hidden md:inline">Audit</span>
-                </button>
-              )}
-
-              {isAdmin && (
-                <button
-                  id="nav-users-btn"
-                  onClick={() => onSelectView('users')}
-                  title="Team & User Management"
-                  aria-label="Team & User Management"
-                  className={`flex h-8 items-center gap-1.5 px-2.5 rounded-md text-xs font-semibold transition-all ${
-                    currentView === 'users'
-                      ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                  }`}
-                >
-                  <Users className="h-4 w-4 text-purple-400" />
-                  <span className="hidden md:inline">Users</span>
-                </button>
-              )}
-            </nav>
           </div>
 
           {/* Action Controls & Sync Status */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Active Role Badge */}
-            <div
-              id="active-role-badge"
-              className="hidden md:flex items-center gap-2 rounded-lg border border-slate-800 bg-[#1f2937] px-2.5 py-1.5 text-xs text-slate-300 select-none"
-              title={`Authenticated Role: ${user.role} (Enforced)`}
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" />
-              <span className="font-semibold text-slate-400">Role:</span>
-              <span
-                className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${
-                  isAdmin
-                    ? 'bg-purple-900/40 text-purple-300 border border-purple-800/50'
-                    : 'bg-sky-900/40 text-sky-300 border border-sky-800/50'
-                }`}
-              >
-                {user.role}
-              </span>
-            </div>
-
             {/* Clean Refresh Button */}
             <button
               id="header-refresh-btn"
@@ -331,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            {/* User Profile & Menu Dropdown */}
+            {/* User Profile & Menu Dropdown (Role removed) */}
             <div className="relative block border-l border-slate-800 pl-2 sm:pl-4" ref={userRef}>
               <button
                 id="user-profile-menu-btn"
@@ -341,15 +216,6 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <div className="text-right hidden sm:block">
                   <p className="text-xs font-medium text-slate-200">{user.userName}</p>
-                  <div className="flex items-center justify-end gap-1">
-                    <span
-                      className={`text-[9px] font-mono px-1 rounded ${
-                        isAdmin ? 'bg-purple-900/50 text-purple-300' : 'bg-sky-900/50 text-sky-300'
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </div>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 hover:border-[#6366f1] transition-colors">
                   <span className="text-xs font-bold text-[#6366f1]">{getInitials(user.userName)}</span>
@@ -364,35 +230,33 @@ export const Header: React.FC<HeaderProps> = ({
                   <div className="px-3 py-2 border-b border-slate-800">
                     <p className="font-semibold text-white">{user.userName}</p>
                     <p className="text-[11px] truncate text-slate-400">{user.email}</p>
-                    <span className="mt-1 inline-flex items-center gap-1 rounded bg-[#6366f1]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#6366f1] border border-[#6366f1]/20">
-                      <ShieldCheck className="h-3 w-3" />
-                      Role: {user.role}
-                    </span>
                   </div>
 
                   <div className="mt-1 space-y-1">
-                    {isAdmin && (
-                      <button
-                        onClick={() => {
-                          onSelectView('users');
-                          setShowUserMenu(false);
-                        }}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-                      >
-                        <Users className="h-3.5 w-3.5 text-purple-400" />
-                        <span>Manage Team & Users</span>
-                      </button>
+                    {user.role === 'Admin' && (
+                      <>
+                        <button
+                          onClick={() => {
+                            onSelectView('users');
+                            setShowUserMenu(false);
+                          }}
+                          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                        >
+                          <Users className="h-3.5 w-3.5 text-purple-400" />
+                          <span>Team & Users</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            onOpenSheetModal();
+                            setShowUserMenu(false);
+                          }}
+                          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                        >
+                          <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" />
+                          <span>Database & Google Sheets</span>
+                        </button>
+                      </>
                     )}
-                    <button
-                      onClick={() => {
-                        onOpenSheetModal();
-                        setShowUserMenu(false);
-                      }}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-                    >
-                      <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" />
-                      <span>Database & Google Sheets</span>
-                    </button>
                     <button
                       onClick={onLogout}
                       className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-rose-400 hover:bg-rose-500/10 transition-colors"
@@ -408,7 +272,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </header>
 
-      {/* Side Navigation Drawer (Opened exclusively by the single Menu button) */}
+      {/* Side Navigation Drawer (Opened by clicking Obsidian CRM brand logo) */}
       <SideNavbar
         isOpen={isSideNavOpen}
         onClose={() => setIsSideNavOpen(false)}
